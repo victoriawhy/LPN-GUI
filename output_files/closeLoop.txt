@@ -1,0 +1,14 @@
+start ground  R2 
+start ground  I1 
+start ground  R2 
+start ground  I1 
+R2 5  
+R2 5 R1 5
+R2 5 I1 10
+R2 5  
+I1 10 R2 5
+I1 10 R1 5
+I1 10 R1 5
+R1 5  
+R1 5  
+R1 5 R2 5

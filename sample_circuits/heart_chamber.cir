@@ -1,0 +1,14 @@
+Heart Chamber ODE 
+* Current source (Qin)
+I1 0 1 48.28
+* Capacitor
+C1 1 0 0.05
+* Inductor
+L1 1 2 0.01
+* Resistor
+R1 2 3 0.05
+* Voltage source (Pout)
+V1 3 0 110.53
+
+.op
+.end

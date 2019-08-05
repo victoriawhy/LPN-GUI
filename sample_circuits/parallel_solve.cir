@@ -1,0 +1,19 @@
+* Parallel Solve Sample
+
+* Voltage sources
+Vin   1 0 110.58
+Vout1 3 0 110.58
+Vout2 4 0 110.58
+Vout3 5 0 110.58
+
+* Resistors
+Ra 1 2 10
+R1 2 3 100
+R2 2 4 200
+R3 2 5 300
+
+* Capacitors
+Ca 2 0 0.05
+
+.ic v(2)=90
+.tran 0.001ms 2s

@@ -1,0 +1,15 @@
+ODE Solve Sample
+
+* Voltage source
+V1 1 0 110.58
+
+* Resistors
+R1 1 2 10
+R2 2 0 100
+
+* Capacitor
+C1 2 0 0.05
+
+.ic v(2)=90
+.tran 0.001ms 3s
+.end

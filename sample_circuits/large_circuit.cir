@@ -1,0 +1,27 @@
+Large Circuit ODE
+
+* Voltage source
+Vin 1 0 110.58
+
+* Resistors
+Ra 1 2 1.0
+Rr 3 4 2.0
+RL 3 6 3.0
+r_bc_r 4 5 15.0
+r_bc_l 6 7 10.0 
+R_bcr 5 0 150.0
+R_bcl 7 0 100.0
+
+* Capacitors
+Ca 2 0 0.05
+Cr 4 0 0.0025
+CL 6 0 0.0025
+C_bcr 5 0 0.04
+C_bcl 7 0 0.05
+
+* Inductors
+La 2 3 0.01
+
+.ic v(2)=90 v(4)=90 v(5)=90 v(6)=90 v(7)=90
+.tran 0.001ms 5s
+.end

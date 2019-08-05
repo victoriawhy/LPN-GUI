@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/voltageSourceShadow.png</file>
+        <file>images/voltageSourceSelected.png</file>
+        <file>images/voltageSource.png</file>
+        <file>images/resistorShadow.png</file>
+        <file>images/resistorSelected.png</file>
+        <file>images/resistor.png</file>
+        <file>images/inductorShadow.png</file>
+        <file>images/inductorSelected.png</file>
+        <file>images/inductor.png</file>
+        <file>images/groundShadow.png</file>
+        <file>images/groundSelected.png</file>
+        <file>images/ground.png</file>
+        <file>images/currentSourceShadow.png</file>
+        <file>images/currentSourceSelected.png</file>
+        <file>images/currentSource.png</file>
+        <file>images/capacitorShadow.png</file>
+        <file>images/capacitorSelected.png</file>
+        <file>images/capacitor.png</file>
+        <file>images/startGroundShadow.png</file>
+        <file>images/startGroundSelected.png</file>
+        <file>images/startGround.png</file>
+    </qresource>
+</RCC>

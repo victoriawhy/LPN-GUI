@@ -1,0 +1,15 @@
+RCR Circuit with External Flow source outlet
+
+* Voltage source
+I1 1 0 external 
+
+* Resistors
+R1 1 2 10
+R2 2 0 100
+
+* Capacitor
+C1 2 0 0.079577
+
+.ic v(2)=100
+.tran 0.1ms 0.01s uic 
+.end

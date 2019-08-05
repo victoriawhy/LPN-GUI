@@ -1,0 +1,2 @@
+
+groundR1resistor10V1dirichlet surface (pressure)10start ground

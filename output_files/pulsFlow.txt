@@ -1,0 +1,6 @@
+R1 10  
+R1 10  
+I1 /Users/vyuan/Marsden-Lab/0D_LPN_Python_Solver-master/test_flow.dat R1 10
+I1 /Users/vyuan/Marsden-Lab/0D_LPN_Python_Solver-master/test_flow.dat R1 10
+start ground  I1 
+start ground  I1 
