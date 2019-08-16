@@ -68,6 +68,7 @@ public:
     // for adding to a netlist
     QString getName() { return prefix + name; }
     QString getValue() { return value + unitMod; }
+    bool getAcceptExternal() { return acceptsExt; }
     QString getExternalFile() { return externalFile; }
     QString getSubtype() { return subtype; }
     void processInput(QVector<QString> elemInfo);
@@ -97,6 +98,7 @@ private:
     QString units;
     QString externalFile;
     QString subtype;
+    bool acceptsExt;
 
     // Dialog box
     QFormLayout *form;

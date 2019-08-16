@@ -22,10 +22,12 @@ private:
 signals:
     void sendData(QString name, QString value);
     void processInput(QVector<QString> elemInput);
+    void readyParse();
 
 public slots:
     void receiveData(CircuitElement *elem);
     void storeInput();
+    void removeForm(CircuitElement *elem);
 };
 #endif // USERPANEL_H
 

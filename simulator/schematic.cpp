@@ -205,14 +205,6 @@ void Schematic::simulate(bool saveOnly)
  */
 int Schematic::_parse()
 {
-    /*
-    qDebug("Looking @ allElements: ");
-    bool isEmpty = allElements.empty();
-    qDebug() << isEmpty;
-    for(CircuitElement *elem : allElements) {
-        qDebug() << elem->getName();
-    }
-    */
     CircuitElement *start = nullptr;
     QList<QGraphicsItem *> items = this->items();
     foreach(QGraphicsItem *item, items) {
@@ -225,34 +217,21 @@ int Schematic::_parse()
         }
     }
     if (start == nullptr) return NoStartError;
-    //int nodeID = -1;
-    //LPN_Node *startNode = start->getNodeTwo(); // TODO: don't hardcode
-
-
-    //QSet<CircuitElement *> seen;
-     //QSet<LPN_Node *> seen;
-    //CircuitElement *startElement = qgraphicsitem_cast<CircuitElement *>(startNode->getElement());
 
     //Setting up QMap to pass to _parseCircuit
     QMap<CircuitElement *, CircuitElement *> elemConnections;
     //Get user input for saving file
     bool ok;
-    QString saveName = "/Users/vyuan/Desktop/LPN-Plugin-master/output_files/default.txt";
+    //QString saveName = "/Users/vyuan/Desktop/LPN-Plugin-master/output_files/default.txt";
+    QString saveName = "/Users/vyuan/Marsden-Lab/0D_LPN_Python_Solver-master/GUI_input_test/default.txt";
     QString filename = QInputDialog::getText(0, "Input dialog", "LPN Name: ",
                                              QLineEdit::Normal, "", &ok);
     if (ok && !filename.isEmpty()) {
-        QString filePath = "/Users/vyuan/Desktop/LPN-Plugin-master/output_files/" + filename + ".txt";
+        QString filePath = "/Users/vyuan/Marsden-Lab/0D_LPN_Python_Solver-master/GUI_input_test/" + filename + ".txt";
         qDebug() << filePath;
         return _parseCircuit(elemConnections, filePath);
     }
     return _parseCircuit(elemConnections, saveName);
-
-    //Finds starting GND node and calls _parseFrom to handle the rest of the circuit
-    //qDebug("Moving to _parseFrom");
-    //return _parseFrom(startNode, 0, nodeID, nullptr, seen);
-
-    //qDebug("Moving to _parseElem");
-    //return _parseElem(startNode, startElement, nullptr, seen, elemConnections);
 
 }
 void Schematic::writeCircuitToFile(const QString &filename,
@@ -428,7 +407,8 @@ void Schematic::deleteSelection()
             CircuitElement *elemToDelete =
                     qgraphicsitem_cast<CircuitElement *>(item);
             allElements.remove(elemToDelete);
-            qDebug("Removed from allElements");
+            //Send signal to userpanel.cpp to delete QFormWidget
+            emit(panelRemove(elemToDelete));
             toDelete.append(item);
         }
         // If graphic item is a node with an associated element,
@@ -439,7 +419,8 @@ void Schematic::deleteSelection()
             CircuitElement *elemToDelete =
                     qgraphicsitem_cast<CircuitElement *>(tempNode->getElement());
             allElements.remove(elemToDelete);
-            qDebug("Removed from allElements");
+            //Send signal to userpanel.cpp to delete QFormWidget
+            emit(panelRemove(elemToDelete));
         }
         // If graphic item is just a node who cares allElements is fine whoo!
         if (item->type() == LPN_Node::Type &&

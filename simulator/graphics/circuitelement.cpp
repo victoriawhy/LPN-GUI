@@ -52,6 +52,8 @@ CircuitElement::CircuitElement(
     value = "";
     unitMod = "";
     units = properties.units;
+    //bool value to be accessed by userpanel.cpp
+    if (prefix == "R" || prefix == "V" || prefix == "Q" || prefix == "C") {acceptsExt = true;}
 
     label = new QGraphicsSimpleTextItem(prefix + name + "\n" + value + units, this);
 
@@ -208,7 +210,6 @@ QDialog *CircuitElement::createDialogBox(QString prefix,
     layout->addWidget(nameLabel, 0, 0);
     layout->addWidget(prefixLabel, 0, 1, Qt::AlignRight);
     layout->addWidget(nameLineEdit, 0, 2, 1, 4);
-
     layout->addWidget(valueLabel, 1, 0);
 
     if (allowsExternalInput) {
@@ -376,17 +377,28 @@ void CircuitElement::processDialogInput()
 /* Input: QVector<QString> data passed from userpanel.cpp
  * Function: Sets properties of circuit elements inputted by the user
  * Output: Void, tesoro, void
+ * Use the allowExternal later to do more error-checking:
+ *      if !allowExternal but can't toInt/toFloat/!=0, throw an error for bad value
  */
 void CircuitElement::processInput(QVector<QString> elemInfo) {
+    value = elemInfo[0];
+    if (value.toInt() || value.toFloat() || value == 0) {
+        name = elemInfo[1]; //constant input
+    }
+    else {
+        qDebug() << value; //should be filepath
+        name = elemInfo[1] + "_dt"; //input file given
+    }
+    //name = elemInfo[1];
+    /*
     for (QString s : elemInfo) {
-        if (s.toInt()){
+        if (s.toInt() || s.toFloat() || s == '0'){
             value = s;
-            qDebug() << this->getValue();
         } else {
             name = s;
-            qDebug() << this->getName();
         }
     }
+    */
 }
 
 // ================= EVENT HANDLERS ============================================
@@ -442,6 +454,7 @@ void CircuitElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     if(!(nodeOne && nodeTwo)) return;
     nodeOne->hideNode();
     nodeTwo->hideNode();
+    display = normal;
     QGraphicsItem::hoverLeaveEvent(event);
 }
 

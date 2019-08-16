@@ -79,6 +79,7 @@ signals:
     void elementAdded(CircuitElement *elem);
     //Sends CircuitElement* to userpanel.cpp
     void sendData(CircuitElement *elem);
+    void panelRemove(CircuitElement *elemToDelete);
 
 public slots:
     void parseSchematic();

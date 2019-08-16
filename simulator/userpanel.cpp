@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QVector>
 #include <QQueue>
+#include <QRadioButton>
 
 UserPanel::UserPanel(QWidget *parent)
     :QWidget(parent)
@@ -19,69 +20,126 @@ UserPanel::UserPanel(QWidget *parent)
     connect(out_button, SIGNAL(released()), this, SLOT(storeInput()));
 }
 
-
-/* Function to add QFormLayout:
- * Input: CircuitElement *elem
- * Action: Pull QFormLayout from panelElem and add it to panel
- * Called when element has been added in schematic.cpp
- *
-void UserPanel::addForm(CircuitElement *elem) {
-    QWidget *currForm = panelElem.value(elem);
-    panel->addWidget(currForm);
-}*/
-
-/*Function to iterate through panelElem
- * For each CircuitElement *:
- * Store name and value into a QVector<QString>
- * Signal sendData(QVector<QString>) to circuitelement.cpp
- * | circuitelement can process the vector and store into
- * the element.
- * Void but calls schematic::parse
-
-void getProperties() {
-    QMapIterator<CircuitElement *, QWidget *> i(panelElem);
-    QVector<QVector<QString>> elemProperties = new QVector;
-    while (i.hasNext()) {
-        i.next();
-        QWidget *curr = i.value();
-
-    }
-}
-*/
-
 // ==================== SLOTS =================================
 /* Adds to QMap<CircuitElement *elem, QFormLayout *formLayout>
  * based on signal from Schematic::addElement()
  * Input: CircuitElement *elem, QFormLayout *formLayout
  * Void: appends to global var QMap
  */
+void UserPanel::receiveData(CircuitElement *elem) {
+    if (elem->getSubtype() != "start ground" && elem->getSubtype() != "ground") {
+        QLabel *nameLabel = new QLabel("Name: ");
+        QLineEdit *nameLine = new QLineEdit;
+        QLabel *valueLabel = new QLabel("Value: ");
+        QLineEdit *valueLine = new QLineEdit;
+        QGridLayout *layout = new QGridLayout;
+        layout->addWidget(nameLabel, 0, 0);
+        layout->addWidget(nameLine, 0, 2, 1, 4);
+        layout->addWidget(valueLabel, 1, 0);
+        panelElem.insertMulti(elem, nameLine);
+        if (elem->getAcceptExternal()) {
+            // --- TOGGLE EXTENSIONS BUTTONS ---
+            QRadioButton *constButton = new QRadioButton("Constant value");
+            QRadioButton *externalButton = new QRadioButton("External value");
+            QButtonGroup *valueTypeButtons = new QButtonGroup(layout);
+            valueTypeButtons->addButton(constButton);
+            valueTypeButtons->addButton(externalButton);
+            valueTypeButtons->setExclusive(true);
+            layout->addWidget(constButton, 1, 2);
+            layout->addWidget(externalButton, 1, 3);
+
+            // --- CONST VALUE OPTIONS ---
+            QWidget *constValueExt = new QWidget();
+            QGridLayout *constValueLayout = new QGridLayout;
+            constValueLayout->addWidget(valueLine, 0, 2, 1, 2);
+            constValueExt->setLayout(constValueLayout);
+
+            // --- EXTERNAL VALUE OPTIONS ---
+            QWidget *extValueExt = new QWidget();
+            QWidget *browser = new QWidget;
+            QHBoxLayout *browserLayout = new QHBoxLayout;
+            QLineEdit *valueFileLineEdit = new QLineEdit();
+            QPushButton *browseButton = new QPushButton("Browse");
+            browserLayout->addWidget(valueFileLineEdit);
+            browserLayout->addWidget(browseButton);
+            browser->setLayout(browserLayout);
+            QFormLayout *extValueLayout = new QFormLayout;
+            connect(browseButton, &QPushButton::pressed,
+                    [=](){ valueFileLineEdit->setText( QFileDialog::getOpenFileName(
+                                                            extValueExt,
+                                                            "Choose input file",
+                                                            QDir::homePath(),
+                                                            "All files (*.*)") ); });
+
+            extValueLayout->addRow("Input file: ", browser);
+            extValueExt->setLayout(extValueLayout);
+
+            // --- CONNECT EXTENSIONS ---
+            layout->addWidget(constValueExt, 2, 1, 1, 5);
+            layout->addWidget(extValueExt, 2, 1, 1, 5);
+            constValueExt->hide();
+            extValueExt->hide();
+            connect(constButton, &QRadioButton::toggled, [=](){
+                constValueExt->setVisible(true);
+                extValueExt->setHidden(true);
+            });
+            connect(externalButton, &QRadioButton::toggled, [=](){
+                constValueExt->setHidden(true);
+                extValueExt->setVisible(true);
+            });
+            panelElem.insertMulti(elem, valueLine);
+            panelElem.insertMulti(elem, valueFileLineEdit);
+        } else {
+            layout->addWidget(valueLine, 1, 2, 1, 2);
+            panelElem.insertMulti(elem, valueLine);
+        }
+        panel->addLayout(layout);
+    }
+}
+/*
 void UserPanel::receiveData(CircuitElement *elem){
     //QList<QLineEdit*> elemInfo;
-    QWidget *userForm = new QWidget;
-    QFormLayout *form = new QFormLayout;
-    // User input for element name
-    QLabel *nameLabel = new QLabel("Name: ");
-    QLineEdit *nameLine = new QLineEdit;
-    // User input for element value
-    QLabel *valueLabel = new QLabel("Value: ");
-    QLineEdit *valueLine = new QLineEdit;
-    // Setting up panel layout
-    form->addRow(nameLabel, nameLine);
-    form->addRow(valueLabel, valueLine);
-    userForm->setLayout(form);
-    panel->addWidget(userForm);
-    panelElem.insertMulti(elem, nameLine);
-    panelElem.insertMulti(elem, valueLine);
-    // Appending to QList for storage in QMap
-    //elemInfo->append(nameLine);
-    //elemInfo->append(valueLine);
-    //panelElem[elem] = elemInfo;
-
-
-    //QString name = nameLine->text();
-    //QString value = valueLine->text();
-    //panelElem[elem] = userForm;
-    //addForm(elem);
+    if (elem->getSubtype() != "start ground" && elem->getSubtype() != "ground") {
+        QWidget *userForm = new QWidget;
+        QFormLayout *form = new QFormLayout;
+        QLabel *elemType = new QLabel(elem->getSubtype());
+        // User input for element name
+        QLabel *nameLabel = new QLabel("Name: ");
+        QLineEdit *nameLine = new QLineEdit;
+        form->addRow(elemType);
+        form->addRow(nameLabel, nameLine);
+        // User input for element value
+        QLabel *valueLabel = new QLabel("Value: ");
+        if (elem->getAcceptExternal()) {
+            qDebug() << "can take input";
+            //Change the value label field
+            QRadioButton *constButton = new QRadioButton("Constant value");
+            QRadioButton *externalButton = new QRadioButton("External value");
+            QButtonGroup *valueTypeButtons = new QButtonGroup(form);
+            valueTypeButtons->addButton(constButton);
+            valueTypeButtons->addButton(externalButton);
+            valueTypeButtons->setExclusive(true);
+        }
+        else {
+            QLineEdit *valueLine = new QLineEdit;
+            form->addRow(valueLabel, valueLine);
+        }
+        //qDebug() << (form->labelForField(nameLine));
+        userForm->setLayout(form);
+        //qDebug() << "parent:" << nameLabel->parentWidget();
+        panel->addWidget(userForm);
+        panelElem.insertMulti(elem, nameLine);
+        //panelElem.insertMulti(elem, valueLine);
+    }
+}
+*/
+void UserPanel::removeForm(CircuitElement *elem) {
+    for (int i=0; i<2; i++){
+        QLineEdit *val = panelElem[elem];
+        panel->removeWidget(val);
+        QObject *obj = val->parent();
+        panelElem.take(elem);
+    }
 }
 
 /* Reads in user input from nameLine and valueLine
@@ -92,59 +150,41 @@ void UserPanel::receiveData(CircuitElement *elem){
 
 // ==================== EVENT HANDLER =========================
 void UserPanel::storeInput() {
-    /*
-    QList<CircuitElement *> allKeys = panelElem.uniqueKeys();
-    for (CircuitElement *c : allKeys) {
-        QVector<QString> info;
-        qDebug() << c->getName();
-        QList<QLineEdit *> values;
-        values.append(panelElem.value(c));
-        for (QLineEdit *v : values) {
-            info.append(v->text());
-            qDebug() << v->text();
-        }
-    }*/
-    //QString currKey = "";
     QList<CircuitElement*> mapKeys = panelElem.keys();
     QVector<QString> elemInput;
+    int emptyCount = 0;
     for (int i = 0; i < mapKeys.length(); i++) {
         CircuitElement *currKey = mapKeys[i];
         QLineEdit *currValue = panelElem.take(currKey);
-        elemInput.append(currValue->text());
-        if (i != 0 && mapKeys[i] == mapKeys[i-1]) {
-            //qDebug() << "Found pair: " << elemInput[0] << elemInput[1];
+        if (currValue->text() != "") {
+            elemInput.append(currValue->text());
+        } else {
+            emptyCount++;
+            if (emptyCount >= 1) {
+                //Missing input for nonconstant
+                if (panelElem.count(currKey) == 2) {
+                    QMessageBox::warning(nullptr, "Not enough inputs", "Pls fill in the QLineEdits");
+                }
+                //Missing input for constant
+                else{
+                    if (panelElem.count(currKey) > 2) {
+                        QMessageBox::warning(nullptr, "Not enough inputs", "Pls fill in the QLineEdits");
+                    }
+                }
+            }
+        }
+        //Complete parsing with nonconstant
+        if (elemInput.size() == 2) {
             mapKeys[i]->processInput(elemInput);
             elemInput.clear();
         }
+
+        /*elemInput.append(currValue->text());
+        if (i != 0 && mapKeys[i] == mapKeys[i-1]) {
+            mapKeys[i]->processInput(elemInput);
+            elemInput.clear();
+        }*/
     }
-    //QQueue<QString> elemInput;
-    /*QMapIterator<CircuitElement *, QLineEdit *> i(panelElem);
-    while (i.hasNext()){
-        i.next();
-        QString currInput = i.value()->text();
-        if (i.peekPrevious().key()) {
-            if (i.peekPrevious().key() == i.key()) {
-                //i.key()->processInput(elemInput);
-                elemInput.append(currInput);
-                elemInput.clear();
-            }
-        } else {
-            elemInput.append(currInput);
-        }
-        qDebug() << i.key()->getName();
-        //currKey = i.key()->getName() + i.key()->getSubtype();
-        //QString currInput = i.value()->text();
-        //elemInput.append(currInput);
-        //elemInput.enqueue(currInput);
-    }*/
+    emit(readyParse());
 }
 
-
-/* Function to process user input from QFormLayout
- * Called on keyboard click of enter
- * Input: QFormLayout *formLayout, CircuitElement *elem
- * Action: Reads in user input in the form layout
- * modifies the elem, and emits signal to send elem to schematic
- * Output: CircuitElement *elem with the appropriate
- * user input for name and value
- */
