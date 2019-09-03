@@ -53,7 +53,7 @@ CircuitElement::CircuitElement(
     unitMod = "";
     units = properties.units;
     //bool value to be accessed by userpanel.cpp
-    if (prefix == "R" || prefix == "V" || prefix == "Q" || prefix == "C") {acceptsExt = true;}
+    if (prefix == "R" || prefix == "V" || prefix == "I" || prefix == "C") {acceptsExt = true;}
 
     label = new QGraphicsSimpleTextItem(prefix + name + "\n" + value + units, this);
 

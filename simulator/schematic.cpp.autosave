@@ -276,7 +276,6 @@ int Schematic::_parseCircuit(QMap<CircuitElement *, CircuitElement *> &elemConne
     QStringList arguments { "/Users/vyuan/Marsden-Lab/0D_LPN_Python_Solver-master/GUI_input_test/LPN_input.py", saveName};
     QProcess p;
     p.execute("/Users/vyuan/anaconda2/bin/python", arguments);
-    qDebug() << "DONE";
     return 0;
 }
 

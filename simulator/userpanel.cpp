@@ -160,6 +160,9 @@ void UserPanel::storeInput() {
             elemInput.append(currValue->text());
         } else {
             emptyCount++;
+            /* Potential error fixing:
+             * Make a new map | key:value::elementName:emptyCount
+             * iterate through map and if emptyCount < 2, throw error
             if (emptyCount >= 1) {
                 //Missing input for nonconstant
                 if (panelElem.count(currKey) == 2) {
@@ -172,6 +175,7 @@ void UserPanel::storeInput() {
                     }
                 }
             }
+            */
         }
         //Complete parsing with nonconstant
         if (elemInput.size() == 2) {
